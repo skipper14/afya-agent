@@ -14,7 +14,7 @@ This project implements a production-style Python inference engine for the AfyaP
 ## Key additions for this repository
 - `ARCHITECTURE.md`: design choices, compliance guardrails, token management, and tool orchestration.
 - `GIT_FLOW.md`: branch isolation, semantic commit guidance, PR review checklist, and release validation.
-- `afya_agent/test_afya_agent.py`: regression coverage for privacy masking, tool execution, citation capture, and audit trail generation.
+- `tests/test_afya_agent.py`: regression coverage for privacy masking, tool execution, citation capture, and audit trail generation.
 
 ## Compliance and governance
 - Sensitive personal identifiers are masked prior to model input, complying with Kenya Data Protection Act (2019) principles.
@@ -28,6 +28,7 @@ python3 afya_agent.py "I have a medication refill request"
 
 ## Repository workflow
 - Create feature branches from `main` using descriptive names such as `feat/rag-agent-system`.
+- Final code updates should be delivered through a pull request merged into `main`; this repository uses `feat-rag-agent-system` as the example feature branch for the current work.
 - Use semantic commit messages: `feat: add policy-guided RAG retriever`, `fix: enforce PII masking`, `docs: add architecture and git flow guidance`.
 - Open PRs with a checklist that includes tests, documentation, and security review.
 - Keep the main branch deployable at all times.
@@ -65,6 +66,3 @@ python3 app.py "I have had severe chest pain for 20 minutes and I feel short of 
 1. Cloud success path: valid JSON returned from the OpenAI route.
 2. Cloud failure path: the script prints a cloud error and falls back to Ollama.
 3. Local fallback path: Ollama returns a valid JSON object for the same message.
-
-4. Local fallback path: Ollama returns a valid JSON object for the same message.
-# afya-agent
