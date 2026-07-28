@@ -49,3 +49,8 @@ This repository implements an enterprise-inspired, document-grounded medical ins
 - Re-masking is only applied to the final user-facing answer.
 - The policy context is the single source of truth for coverage and routing guidance.
 - Any ungrounded prediction is accompanied by a default safe routing decision.
+
+## Development workflow
+- The current feature work was developed on the `feat-rag-agent-system` branch.
+- Changes were merged into `main` through a pull-request-style merge commit, preserving a clean feature branch history.
+- This workflow aligns with the repository's documented branch strategy and release policy.
