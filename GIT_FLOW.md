@@ -35,6 +35,7 @@
 
 ## Release and merge policy
 - `main` should always remain buildable and runnable.
+- Final feature work is delivered via pull requests from a feature branch into `main`; for this repository, the branch `feat-rag-agent-system` is the intended feature branch used to deliver the completed agent.
 - Merge only after passing tests and review approval.
 - Use `main` for release tags and deployment.
 
@@ -43,3 +44,7 @@
 - Favor explicit logic over hidden side effects.
 - Use `unittest` or `pytest` for regression coverage.
 - Keep the architecture doc aligned with the actual code path.
+
+
+
+
