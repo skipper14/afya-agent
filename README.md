@@ -66,6 +66,5 @@ python3 app.py "I have had severe chest pain for 20 minutes and I feel short of 
 2. Cloud failure path: the script prints a cloud error and falls back to Ollama.
 3. Local fallback path: Ollama returns a valid JSON object for the same message.
 
-3. Cloud failure path: the script prints a cloud error and falls back to Ollama.
 4. Local fallback path: Ollama returns a valid JSON object for the same message.
 # afya-agent
