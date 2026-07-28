@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+"""AfyaPlus grounded verification agent.
+
+This module implements a privacy-first RAG agent for medical insurance verification and clinical
+routing. Core responsibilities include:
+
+- PII masking and de-masking for Kenyan identifiers.
+- Local policy document retrieval and source-aware grounding.
+- Safe tool execution for medication and diagnostic calculations.
+- Stateful conversation memory for multi-turn inquiry handling.
+- Audit trail generation for compliance and review.
+"""
+
 import json
 import os
 import re
@@ -7,10 +19,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
+from collections import Counter
+
 from dotenv import load_dotenv
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnableLambda
-from langchain_core.tools import tool
 from langchain_openai import ChatOpenAI
 from llama_index.core import SimpleDirectoryReader, VectorStoreIndex, Settings
 from llama_index.core.embeddings import MockEmbedding
@@ -32,6 +44,7 @@ class PolicyKnowledgeBase:
     def __init__(self, knowledge_dir: Path | None = None) -> None:
         self.knowledge_dir = knowledge_dir or BASE_DIR / "knowledge_manual"
         self.retriever: Any | None = None
+        self.last_citations: List[str] = []
         self._build()
 
     def _build(self) -> None:
@@ -65,9 +78,12 @@ class PolicyKnowledgeBase:
             return "No relevant policy context was found."
 
         snippets = []
+        citations = []
         for node in nodes:
             source = node.metadata.get("file_name", "knowledge_manual")
             snippets.append(f"[{source}] {node.text}")
+            citations.append(source)
+        self.last_citations = citations
         return "\n\n".join(snippets)
 
 
@@ -197,6 +213,7 @@ def run_agent(user_message: str, memory: ConversationMemory | None = None) -> Di
     masked_message, replacements = mask_pii(user_message)
 
     context = KNOWLEDGE_BASE.retrieve(masked_message)
+    citations = KNOWLEDGE_BASE.last_citations if getattr(KNOWLEDGE_BASE, "last_citations", None) else []
     tool_output: Dict[str, Any] | None = None
 
     if "dose" in masked_message.lower() or "volume" in masked_message.lower() or "medication" in masked_message.lower():
@@ -212,12 +229,21 @@ def run_agent(user_message: str, memory: ConversationMemory | None = None) -> Di
     final_reply = unmask_output(reply_text, replacements)
     memory.add_turn(user_message, final_reply)
 
+    audit_trail = [
+        "PII masking applied",
+        "Knowledge retrieval executed",
+        f"Retrieved sources: {', '.join(citations) if citations else 'none'}",
+        f"Tool executed: {'yes' if tool_output else 'no'}",
+    ]
+
     return {
         "masked_input": masked_message,
         "grounded_context": context,
+        "citations": citations,
         "tool_output": tool_output,
         "answer": final_reply,
         "memory": memory.render(),
+        "audit_trail": audit_trail,
     }
 
 
